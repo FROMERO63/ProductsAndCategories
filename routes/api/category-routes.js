@@ -47,25 +47,17 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   // update a category by its `id` value
-  const updatedCategory = await Category.update(
-    {
-      // All the fields you can update and the data attached to the request body.
-      category_name: req.body.category_name,
-    },
-    {
-      // Gets a book based on the book_id given in the request parameters
-      where: {
-        id: req.params.id,
-      },
+  try {
+    const updatedCategory = await Category.update(req.body, {where: {id: req.params.id,}});
+    if (!updatedCategory) {
+      res.status(404).json({ message: 'No id found!' });
+      return;
     }
-  )
-    .then((updatedCategory) => {
-      res.json(updatedCategory);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.json(err);
-    });
+
+    res.status(200).json(updatedCategory);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 router.delete('/:id', async (req, res) => {
@@ -78,7 +70,7 @@ router.delete('/:id', async (req, res) => {
     });
 
     if (!categoryData) {
-      res.status(404).json({ message: 'No reader found with that id!' });
+      res.status(404).json({ message: 'No id found!' });
       return;
     }
 

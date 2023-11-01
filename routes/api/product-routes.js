@@ -48,7 +48,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // create new product
-router.post('/', async (req, res) => {
+router.post('/', (req, res) => {
   /* req.body should look like this...
     {
       product_name: "Basketball",
@@ -57,20 +57,6 @@ router.post('/', async (req, res) => {
       tagIds: [1, 2, 3, 4]
     }
   */
-    try {
-      const productData = await Product.create({
-        product_name: req.body.product_name,
-        price: req.body.price,
-        stock: req.body.stock,
-        category_id: req.body.category_id,
-      });
-      res.status(200).json(productData);
-    } catch (err) {
-      res.status(400).json(err);
-    }
-  });
-
-
   Product.create(req.body)
     .then((product) => {
       // if there's product tags, we need to create pairings to bulk create in the ProductTag model
@@ -91,7 +77,7 @@ router.post('/', async (req, res) => {
       console.log(err);
       res.status(400).json(err);
     });
-    
+  });
 
 // update product
 router.put('/:id', (req, res) => {
@@ -141,18 +127,18 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', async (req, res) => {
   // delete one product by its `id` value
   try {
-    const productData = await Product.destroy({
+    const deleteData = await Product.destroy({
       where: {
         id: req.params.id,
       },
     });
 
-    if (!productData) {
+    if (!deleteData) {
       res.status(404).json({ message: 'No library card found with that id!' });
       return;
     }
 
-    res.status(200).json(productData);
+    res.status(200).json(deleteData);
   } catch (err) {
     res.status(500).json(err);
   }
